@@ -73,33 +73,56 @@ public:
         size++;
     }
 
+    bool deleteNodeByUserID(int userID) {
+        DLLNode<User>* current = head;
+
+        while (current != nullptr) {
+            if (current->data.getUserID() == userID) {
+                return deleteNode(current); 
+            }
+            current = current->next;
+        }
+        return false;
+    }
+
+
     bool deleteNode(DLLNode<T>* node) {
         if (!node) {
-            return false;
+            return false; 
         }
-
-        if (node == head) {
+        if (node == head && node == tail) {
+            head = tail = nullptr;
+        }
+        
+        else if (node == head) {
             head = head->next;
             if (head) {
                 head->prev = nullptr;
             }
-            else {
-                tail = nullptr;
-            }
         }
+        
         else if (node == tail) {
             tail = tail->prev;
-            tail->next = nullptr;
+            if (tail) {
+                tail->next = nullptr;
+            }
         }
+        
         else {
-            node->prev->next = node->next;
-            node->next->prev = node->prev;
+            if (node->prev && node->next) {
+                node->prev->next = node->next;
+                node->next->prev = node->prev;
+            }
+            else {
+                return false;
+            }
         }
 
         delete node;
         size--;
         return true;
     }
+
 
     DLLNode<T>* search(const T& val) const {
         DLLNode<T>* current = head;
