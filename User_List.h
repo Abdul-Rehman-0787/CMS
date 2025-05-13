@@ -17,8 +17,7 @@ private:
     bool typeIndexActive;
 
 public:
-    UserList() : userNameIndexActive(false), emailIndexActive(false),
-        countryIndexActive(false), typeIndexActive(false) {}
+    UserList() : userNameIndexActive(false), emailIndexActive(false),countryIndexActive(false), typeIndexActive(false) {}
 
     void insertUser(const User& user) {
         DLLNode<User>* node = new DLLNode<User>(user);
@@ -87,28 +86,28 @@ public:
 
     bool deleteUserByID(int userID) {
         DLLNode<User>** nodePtr = userIDIndex.search(userID);
-        if (!nodePtr) return false;
+        if (!nodePtr || !(*nodePtr)) {
+            return false; 
+        }
 
-        DLLNode<User>* node = *nodePtr;
-        User user = node->data;
+        DLLNode<User>* node = *nodePtr; 
+        User user1 = node->data;
 
         userIDIndex.remove(userID);
-
         if (userNameIndexActive) {
-            userNameIndex.remove(user.getUserName());
+            userNameIndex.remove(user1.getUserName());
         }
         if (emailIndexActive) {
-            emailIndex.remove(user.getEmail());
+            emailIndex.remove(user1.getEmail());
         }
         if (countryIndexActive) {
-            countryIndex.removeUser(user.getCountry(), node);
+            countryIndex.removeUser(user1.getCountry(), node);
         }
         if (typeIndexActive) {
-            typeIndex.removeUser(user.getType(), node);
+            typeIndex.removeUser(user1.getType(), node);
         }
-
-        users.deleteNode(node);
-        return true;
+        return users.deleteNodeByUserID(userID);
+        return users.deleteNode(node); 
     }
 
     void printAllUsers() const {
